@@ -1,0 +1,99 @@
+{% extends "base.html" %}
+{% block title %}Charges CGC{% endblock %}
+
+{% block content %}
+<header class="page-head">
+  <h1 class="page-title">Charges</h1>
+  <p class="page-sub">Recorded expenditures across all experiments.</p>
+</header>
+
+<div class="action-bar">
+  <a href="{{ url_for('charge_new') }}" class="btn-add">
+    <span class="btn-add-symbol">+</span>
+    Record charge
+  </a>
+</div>
+
+<form class="filter-bar" method="get">
+  <label class="field field-grow">
+    <span class="field-label">Search</span>
+    <input type="text" name="q" value="{{ search }}" placeholder="charge type or experiment" autocomplete="off">
+  </label>
+  <label class="field">
+    <span class="field-label">Experiment</span>
+    <select name="experiment">
+      <option value="">All experiments</option>
+      {% for e in experiments %}
+        <option value="{{ e.experimentId }}" {% if exp_filter == e.experimentId|string %}selected{% endif %}>{{ e.name }}</option>
+      {% endfor %}
+    </select>
+  </label>
+  <label class="field">
+    <span class="field-label">Charge type</span>
+    <select name="type">
+      <option value="">All types</option>
+      {% for t in types %}
+        <option value="{{ t }}" {% if t == type_filter %}selected{% endif %}>{{ t }}</option>
+      {% endfor %}
+    </select>
+  </label>
+  <div class="filter-actions">
+    <button type="submit" class="btn btn-primary">Apply</button>
+    <a href="{{ url_for('charges') }}" class="btn btn-ghost">Reset</a>
+  </div>
+</form>
+
+<div class="result-bar">
+  <span class="result-count">
+    {{ charges|length }} {{ "charge" if charges|length == 1 else "charges" }}
+  </span>
+  <span class="result-totals mono">
+    Subtotal: <strong>{{ total|money }}</strong>
+    <span class="dot">·</span>
+    Adjustments: <strong>{{ total_adj|money }}</strong>
+    <span class="dot">·</span>
+    Net: <strong>{{ (total + total_adj)|money }}</strong>
+  </span>
+</div>
+
+{% if charges %}
+<table class="data-table">
+  <thead>
+    <tr>
+      <th class="num">ID</th>
+      <th>Experiment</th>
+      <th>Type</th>
+      <th class="num">Amount</th>
+      <th class="num">Adjustments</th>
+      <th>Period</th>
+      <th></th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for c in charges %}
+    <tr>
+      <td class="num mono">{{ "%03d"|format(c.chargeId) }}</td>
+      <td>
+        <a href="{{ url_for('experiment_detail', exp_id=c.experimentId) }}" class="link-quiet">
+          <span class="cell-strong">{{ c.experimentName }}</span>
+        </a>
+      </td>
+      <td>{{ c.chargeType }}</td>
+      <td class="num mono">{{ c.chargeAmount|money }}</td>
+      <td class="num mono mute">{{ c.adjustments_total|money if c.adjustments_total else "—" }}</td>
+      <td class="mono mute">{{ c.startDate }} → {{ c.endDate }}</td>
+      <td class="row-action">
+        <form action="{{ url_for('charge_delete', charge_id=c.chargeId) }}" method="post"
+              onsubmit="return confirm('Remove charge №{{ c.chargeId }}? Adjustments tied to it will also be removed.');"
+              style="display: inline;">
+          <button type="submit" class="link-arrow link-arrow-danger">Remove ✕</button>
+        </form>
+      </td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+{% else %}
+  <p class="empty">No charges match.</p>
+{% endif %}
+{% endblock %}

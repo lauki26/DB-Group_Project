@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+{% block title %}New Experiment CGC{% endblock %}
+
+{% block content %}
+<a href="{{ url_for('experiments') }}" class="back-link">← Back to experiments</a>
+
+<header class="page-head">
+  <span class="kicker">— Form —</span>
+  <h1 class="page-title">Register an experiment</h1>
+  <p class="page-sub">Record a new initiative. You can assign researchers and add charges afterwards.</p>
+</header>
+
+<form method="post" class="record-form">
+  <label class="field">
+    <span class="field-label">Name</span>
+    <input type="text" name="name" required placeholder="e.g. Cancer Drug Trial">
+  </label>
+
+  <div class="field-row">
+    <label class="field">
+      <span class="field-label">Start date</span>
+      <input type="date" name="start_date" required>
+    </label>
+    <label class="field">
+      <span class="field-label">End date</span>
+      <input type="date" name="end_date" required>
+    </label>
+  </div>
+
+  <label class="field">
+    <span class="field-label">Description</span>
+    <textarea name="description" rows="4" required placeholder="A short description of the experiment."></textarea>
+  </label>
+
+  <div class="form-actions">
+    <button type="submit" class="btn btn-primary">Register experiment</button>
+    <a href="{{ url_for('experiments') }}" class="btn btn-ghost">Cancel</a>
+  </div>
+</form>
+{% endblock %}

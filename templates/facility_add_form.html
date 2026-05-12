@@ -1,0 +1,122 @@
+{% extends "base.html" %}
+{% block title %}New Facility CGC{% endblock %}
+
+{% block content %}
+
+<a href="{{ url_for('facilities') }}" class="back-link">
+  ← Back to facilities
+</a>
+
+<header class="page-head">
+
+  <h1 class="page-title">
+    Add facility
+  </h1>
+
+  <p class="page-sub">
+    Register a new research facility for experiment usage tracking.
+  </p>
+
+</header>
+
+<form method="post" class="record-form">
+
+  <label class="field">
+
+    <span class="field-label">
+      Institution
+    </span>
+
+    <select name="institution_id" required>
+
+      <option value="">
+        Select institution
+      </option>
+
+      {% for inst in institutions %}
+
+        <option value="{{ inst.institutionId }}">
+          {{ inst.institutionName }}
+        </option>
+
+      {% endfor %}
+
+    </select>
+
+  </label>
+
+  <label class="field">
+
+    <span class="field-label">
+      Facility name
+    </span>
+
+    <input
+      type="text"
+      name="facility_name"
+      required
+      placeholder="e.g. North Research Wing"
+    >
+
+  </label>
+
+  <label class="field">
+
+    <span class="field-label">
+      Facility type
+    </span>
+
+    <input
+      type="text"
+      name="facility_type"
+      required
+      placeholder="e.g. Laboratory, Clean Room"
+    >
+
+  </label>
+
+  <label class="field">
+
+    <span class="field-label">
+      Term
+    </span>
+
+    <input
+      type="text"
+      name="term"
+      required
+      placeholder="e.g. Semester, Annual"
+    >
+
+  </label>
+
+  <label class="field">
+
+    <span class="field-label">
+      Hourly rate
+    </span>
+
+    <input
+      type="number"
+      name="hourly_rate"
+      required
+      placeholder="e.g. 500"
+    >
+
+  </label>
+
+  <div class="form-actions">
+
+    <button type="submit" class="btn btn-primary">
+      Add facility
+    </button>
+
+    <a href="{{ url_for('facilities') }}" class="btn btn-ghost">
+      Cancel
+    </a>
+
+  </div>
+
+</form>
+
+{% endblock %}

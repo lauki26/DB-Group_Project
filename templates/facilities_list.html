@@ -1,0 +1,74 @@
+{% extends "base.html" %}
+{% block title %}Facilities CGC{% endblock %}
+
+{% block content %}
+
+<header class="page-head">
+
+  <h1 class="page-title">
+    Facilities
+  </h1>
+
+  <p class="page-sub">
+    Browse all registered facilities.
+  </p>
+
+</header>
+
+<form method="get" class="toolbar">
+
+  <input
+    type="search"
+    name="q"
+    value="{{ search }}"
+    placeholder="Search facilities..."
+  >
+
+  <button type="submit" class="btn btn-primary">
+    Search
+  </button>
+
+</form>
+
+<div class="card-grid">
+
+  {% for f in facilities %}
+
+    <article class="card">
+
+      <h2>{{ f.facilityName }}</h2>
+
+      <p>
+        {{ f.facilityType }}
+      </p>
+
+      <ul class="meta-list">
+
+        <li>
+          <strong>Institution:</strong>
+          {{ f.institutionName }}
+        </li>
+
+        <li>
+          <strong>Term:</strong>
+          {{ f.term }}
+        </li>
+
+        <li>
+          <strong>Hourly rate:</strong>
+          ${{ f.hourlyRate }}
+        </li>
+
+      </ul>
+
+    </article>
+
+  {% else %}
+
+    <p>No facilities found.</p>
+
+  {% endfor %}
+
+</div>
+
+{% endblock %}

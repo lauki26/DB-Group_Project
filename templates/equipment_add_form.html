@@ -1,0 +1,113 @@
+{% extends "base.html" %}
+{% block title %}New Equipment CGC{% endblock %}
+
+{% block content %}
+
+<a href="{{ url_for('equipment') }}" class="back-link">
+  ← Back to equipment
+</a>
+
+<header class="page-head">
+
+  <h1 class="page-title">
+    Add equipment
+  </h1>
+
+  <p class="page-sub">
+    Register a new piece of equipment for experiment usage tracking.
+  </p>
+
+</header>
+
+<form method="post" class="record-form">
+
+  <label class="field">
+
+    <span class="field-label">
+      Equipment name
+    </span>
+
+    <input
+      type="text"
+      name="equipment_name"
+      required
+      placeholder="e.g. MRI Scanner"
+    >
+
+  </label>
+
+  <label class="field">
+
+    <span class="field-label">
+      Equipment purpose
+    </span>
+
+    <input
+      type="text"
+      name="equipment_purpose"
+      required
+      placeholder="e.g. Brain imaging"
+    >
+
+  </label>
+
+  <label class="field">
+
+    <span class="field-label">
+      Sharing status
+    </span>
+
+    <input
+      type="text"
+      name="sharing_status"
+      required
+      placeholder="e.g. Shared, Restricted"
+    >
+
+  </label>
+
+  <label class="field">
+
+    <span class="field-label">
+      Movability
+    </span>
+
+    <input
+      type="text"
+      name="movability"
+      required
+      placeholder="e.g. Portable, Fixed"
+    >
+
+  </label>
+
+  <label class="field">
+
+    <span class="field-label">
+      Hourly rate
+    </span>
+
+    <input
+      type="number"
+      name="hourly_rate"
+      required
+      placeholder="e.g. 250"
+    >
+
+  </label>
+
+  <div class="form-actions">
+
+    <button type="submit" class="btn btn-primary">
+      Add equipment
+    </button>
+
+    <a href="{{ url_for('equipment') }}" class="btn btn-ghost">
+      Cancel
+    </a>
+
+  </div>
+
+</form>
+
+{% endblock %}

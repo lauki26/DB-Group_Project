@@ -1,0 +1,82 @@
+{% extends "base.html" %}
+{% block title %}Charge Adjustments CGC{% endblock %}
+
+{% block content %}
+<header class="page-head">
+  <h1 class="page-title">Charge Adjustments</h1>
+  <p class="page-sub">Various cost adjustments in experiments.</p>
+</header>
+
+<div class="action-bar">
+  <a href="{{ url_for('adjustment_new') }}" class="btn-add">
+    <span class="btn-add-symbol">+</span>
+    Log adjustment
+  </a>
+</div>
+
+<form class="filter-bar" method="get">
+  <label class="field">
+    <span class="field-label">Type</span>
+    <select name="type">
+      <option value="">All types</option>
+      {% for t in types %}
+        <option value="{{ t }}" {% if t == type_filter %}selected{% endif %}>{{ t }}</option>
+      {% endfor %}
+    </select>
+  </label>
+  <div class="filter-actions">
+    <button type="submit" class="btn btn-primary">Apply</button>
+    <a href="{{ url_for('adjustments') }}" class="btn btn-ghost">Reset</a>
+  </div>
+</form>
+
+<div class="result-bar">
+  <span class="result-count">
+    {{ adjustments|length }} {{ "adjustment" if adjustments|length == 1 else "adjustments" }}
+  </span>
+  <span class="result-totals mono">
+    Total: <strong>{{ total|money }}</strong>
+  </span>
+</div>
+
+{% if adjustments %}
+<table class="data-table">
+  <thead>
+    <tr>
+      <th class="num">ID</th>
+      <th>Charge</th>
+      <th>Experiment</th>
+      <th>Type</th>
+      <th class="num">Amount</th>
+      <th>Date</th>
+      <th></th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for a in adjustments %}
+    <tr>
+      <td class="num mono">{{ "%03d"|format(a.adjustmentId) }}</td>
+      <td class="mono">#{{ "%03d"|format(a.chargeId) }} <span class="mute">({{ a.chargeType }})</span></td>
+      <td>
+        <a href="{{ url_for('experiment_detail', exp_id=a.experimentId) }}" class="link-quiet">
+          {{ a.experimentName }}
+        </a>
+      </td>
+      <td>{{ a.adjustmentType }}</td>
+      <td class="num mono {{ 'positive' if a.amount > 0 else 'negative' }}">{{ a.amount|money }}</td>
+      <td class="mono mute">{{ a.adjustmentDate }}</td>
+      <td class="row-action">
+        <form action="{{ url_for('adjustment_delete', adj_id=a.adjustmentId) }}" method="post"
+              onsubmit="return confirm('Remove adjustment ID{{ a.adjustmentId }}?');"
+              style="display: inline;">
+          <button type="submit" class="link-arrow link-arrow-danger">Remove ✕</button>
+        </form>
+      </td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+{% else %}
+  <p class="empty">No adjustments match.</p>
+{% endif %}
+{% endblock %}

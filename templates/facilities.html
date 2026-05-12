@@ -1,0 +1,128 @@
+{% extends "base.html" %}
+{% block title %}Facilities CGC{% endblock %}
+
+{% block content %}
+<header class="page-head">
+  <h1 class="page-title">Facility Usage</h1>
+  <p class="page-sub">Facility usage across all experiments.</p>
+</header>
+
+  <div class="page-actions">
+    <a href="{{ url_for('facility_new') }}" class="btn-add">
+      <span class="btn-add-symbol">+</span>
+      Record Facility Usage
+    </a>
+  </div>
+
+  
+<form class="filter-bar" method="get">
+  <label class="field field-grow">
+    <span class="field-label">Search</span>
+    <input type="text"
+           name="q"
+           value="{{ search }}"
+           placeholder="facility or experiment"
+           autocomplete="off">
+  </label>
+
+  <label class="field">
+    <span class="field-label">Experiment</span>
+
+    <select name="experiment">
+      <option value="">All experiments</option>
+
+      {% for e in experiments %}
+      <option value="{{ e.experimentId }}"
+        {% if exp_filter == e.experimentId|string %}selected{% endif %}>
+        {{ e.name }}
+      </option>
+      {% endfor %}
+    </select>
+  </label>
+
+  <label class="field">
+    <span class="field-label">Facility Type</span>
+
+    <select name="type">
+      <option value="">All types</option>
+
+      {% for t in types %}
+      <option value="{{ t }}"
+        {% if t == type_filter %}selected{% endif %}>
+        {{ t }}
+      </option>
+      {% endfor %}
+    </select>
+  </label>
+
+  <div class="filter-actions">
+    <button type="submit" class="btn btn-primary">Apply</button>
+
+    <a href="{{ url_for('facilities') }}"
+       class="btn btn-ghost">
+       Reset
+    </a>
+  </div>
+</form>
+
+<div class="result-bar">
+  <span class="result-count">
+    {{ facilities|length }}
+    {{ "facility usage" if facilities|length == 1 else "facility usages" }}
+  </span>
+</div>
+
+{% if facilities %}
+<table class="data-table">
+
+  <thead>
+    <tr>
+      <th class="num">ID</th>
+      <th>Experiment</th>
+      <th>Facility</th>
+      <th>Type</th>
+      <th>Period</th>
+    </tr>
+  </thead>
+
+  <tbody>
+
+    {% for f in facilities %}
+    <tr>
+
+      <td class="num mono">
+        {{ "%03d"|format(f.facilityUsageId) }}
+      </td>
+
+      <td>
+        <a href="{{ url_for('experiment_detail',
+                            exp_id=f.experimentId) }}"
+           class="link-quiet">
+
+          <span class="cell-strong">
+            {{ f.experimentName }}
+          </span>
+        </a>
+      </td>
+
+      <td>{{ f.facilityName }}</td>
+
+      <td>{{ f.facilityType }}</td>
+
+      <td class="mono mute">
+        {{ f.startDate }}
+        →
+        {{ f.endDate }}
+      </td>
+
+    </tr>
+    {% endfor %}
+
+  </tbody>
+
+</table>
+
+{% else %}
+<p class="empty">No facilities match.</p>
+{% endif %}
+{% endblock %}

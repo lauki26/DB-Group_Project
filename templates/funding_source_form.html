@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+{% block title %}New Funding Source CGC{% endblock %}
+
+{% block content %}
+<a href="{{ url_for('funding_sources') }}" class="back-link">← Back to funding sources</a>
+
+<header class="page-head">
+  <h1 class="page-title">Add a funding source</h1>
+  <p class="page-sub">Register a new source so experiments can be linked to it.</p>
+</header>
+
+<form method="post" class="record-form">
+  <label class="field">
+    <span class="field-label">Source name</span>
+    <input type="text" name="name" required placeholder="e.g. NSF Career Award">
+  </label>
+
+  <label class="field">
+    <span class="field-label">Type</span>
+    <input type="text" name="type" required placeholder="e.g. Government, Private, Academic" list="funding-types">
+    <datalist id="funding-types">
+      {% for t in existing_types %}
+        <option value="{{ t }}"></option>
+      {% endfor %}
+    </datalist>
+  </label>
+
+  <div class="form-actions">
+    <button type="submit" class="btn btn-primary">Add funding source</button>
+    <a href="{{ url_for('funding_sources') }}" class="btn btn-ghost">Cancel</a>
+  </div>
+</form>
+{% endblock %}

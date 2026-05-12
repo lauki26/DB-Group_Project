@@ -1,0 +1,209 @@
+{% extends "base.html" %}
+{% block title %}{% if q %}Search: {{ q }}{% else %}Search{% endif %} — Control Group Consortium{% endblock %}
+
+{% block topbar_search %}{% endblock %}
+
+{% block content %}
+<header class="page-head">
+  <h1 class="page-title">Search</h1>
+  {% if q %}
+    <p class="page-sub">
+      {{ total }} {{ "result" if total == 1 else "results" }} for <span class="search-query mono">"{{ q }}"</span>
+    </p>
+  {% else %}
+    <p class="page-sub">Search researchers, experiments, funding sources, institutions, and charges.</p>
+  {% endif %}
+</header>
+
+<form class="search-form" action="{{ url_for('search') }}" method="get" role="search">
+  <svg class="search-form-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+    <circle cx="11" cy="11" r="7"></circle>
+    <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+  </svg>
+  <input type="search" name="q" value="{{ q }}" class="search-form-input"
+         placeholder="Search researchers, experiments, facilities, funding…"
+         autocomplete="off" autofocus>
+  <button type="submit" class="btn btn-primary">Search</button>
+</form>
+
+{% if not q %}
+  <p class="empty">Enter a search term above to begin.</p>
+{% elif total == 0 %}
+  <div class="empty">
+    <p style="margin: 0 0 8px;"><strong>No matches found for "{{ q }}".</strong></p>
+    <p style="margin: 0; font-size: 12.5px;">Try a shorter or different term, or browse by category above.</p>
+  </div>
+{% else %}
+
+  {% if results.researchers %}
+  <section class="search-section">
+    <div class="search-section-head">
+      <h2 class="section-label">Researchers</h2>
+      <span class="search-count mono">{{ results.researchers|length }}</span>
+    </div>
+    <ul class="record-list">
+      {% for r in results.researchers %}
+      <li class="record-item">
+        <a href="{{ url_for('researcher_detail', res_id=r.researcherId) }}" class="record-link">
+          <span class="record-id mono">#{{ "%03d"|format(r.researcherId) }}</span>
+          <span class="record-name">{{ r.researcherName }}</span>
+          <span class="record-meta mono">{{ r.institutionName }} · {{ r.contact }}</span>
+        </a>
+      </li>
+      {% endfor %}
+    </ul>
+  </section>
+  {% endif %}
+
+  {% if results.experiments %}
+  <section class="search-section">
+    <div class="search-section-head">
+      <h2 class="section-label">Experiments</h2>
+      <span class="search-count mono">{{ results.experiments|length }}</span>
+    </div>
+    <ul class="record-list">
+      {% for e in results.experiments %}
+      <li class="record-item">
+        <a href="{{ url_for('experiment_detail', exp_id=e.experimentId) }}" class="record-link record-link-stack">
+          <span class="record-line-1">
+            <span class="record-id mono">#{{ "%03d"|format(e.experimentId) }}</span>
+            <span class="record-name">{{ e.name }}</span>
+            <span class="record-meta mono">{{ e.startDate }} → {{ e.endDate }}</span>
+          </span>
+          <span class="record-line-2">{{ e.description }}</span>
+        </a>
+      </li>
+      {% endfor %}
+    </ul>
+  </section>
+  {% endif %}
+
+  {% if results.institutions %}
+  <section class="search-section">
+    <div class="search-section-head">
+      <h2 class="section-label">Institutions</h2>
+      <span class="search-count mono">{{ results.institutions|length }}</span>
+    </div>
+    <ul class="record-list">
+      {% for i in results.institutions %}
+      <li class="record-item">
+        <a href="{{ url_for('institution_detail', inst_id=i.institutionId) }}" class="record-link">
+          <span class="record-id mono">#{{ "%03d"|format(i.institutionId) }}</span>
+          <span class="record-name">{{ i.institutionName }}</span>
+          <span class="tag tag-{{ i.institutionType|lower }}">{{ i.institutionType }}</span>
+        </a>
+      </li>
+      {% endfor %}
+    </ul>
+  </section>
+  {% endif %}
+
+  {% if results.funding %}
+  <section class="search-section">
+    <div class="search-section-head">
+      <h2 class="section-label">Funding sources</h2>
+      <span class="search-count mono">{{ results.funding|length }}</span>
+    </div>
+    <ul class="record-list">
+      {% for f in results.funding %}
+      <li class="record-item">
+        <a href="{{ url_for('funding_source_detail', fs_id=f.fundingSourceId) }}" class="record-link">
+          <span class="record-id mono">#{{ "%03d"|format(f.fundingSourceId) }}</span>
+          <span class="record-name">{{ f.fundingSourceName }}</span>
+          <span class="tag tag-{{ f.fundingSourceType|lower }}">{{ f.fundingSourceType }}</span>
+        </a>
+      </li>
+      {% endfor %}
+    </ul>
+  </section>
+  {% endif %}
+
+  {% if results.charges %}
+  <section class="search-section">
+    <div class="search-section-head">
+      <h2 class="section-label">Charges</h2>
+      <span class="search-count mono">{{ results.charges|length }}</span>
+    </div>
+    <ul class="record-list">
+      {% for c in results.charges %}
+      <li class="record-item">
+        <a href="{{ url_for('experiment_detail', exp_id=c.experimentId) }}" class="record-link">
+          <span class="record-id mono">#{{ "%03d"|format(c.chargeId) }}</span>
+          <span class="record-name">{{ c.chargeType }} <span class="mute" style="font-weight: 400;">— {{ c.experimentName }}</span></span>
+          <span class="record-meta mono">{{ c.chargeAmount|money }} · {{ c.startDate }} → {{ c.endDate }}</span>
+        </a>
+      </li>
+      {% endfor %}
+    </ul>
+  </section>
+  {% endif %}
+
+
+
+
+  {% if results and (results.equipment or results.facilities) %}  <section class="search-section">
+
+    <div class="search-section-head">
+      <h2 class="section-label">Resources</h2>
+
+      <span class="search-count mono">
+        {{ results.equipment|length + results.facilities|length }}
+      </span>
+    </div>
+
+    <ul class="record-list">
+
+      {% for eq in results.equipment %}
+      <li class="record-item">
+        <a href="{{ url_for('equipment') }}"
+          class="record-link">
+
+          <span class="record-id mono">
+            #{{ "%03d"|format(eq.equipmentUsageId) }}
+          </span>
+
+          <span class="record-name">
+            {{ eq.equipmentName }}
+            <span class="mute">
+              — {{ eq.experimentName }}
+            </span>
+          </span>
+
+          <span class="record-meta mono">
+            Equipment · {{ eq.equipmentPurpose }}
+          </span>
+
+        </a>
+      </li>
+      {% endfor %}
+
+      {% for f in results.facilities %}
+      <li class="record-item">
+        <a href="{{ url_for('facilities') }}"
+          class="record-link">
+
+          <span class="record-id mono">
+            #{{ "%03d"|format(f.facilityUsageId) }}
+          </span>
+
+          <span class="record-name">
+            {{ f.facilityName }}
+            <span class="mute">
+              — {{ f.experimentName }}
+            </span>
+          </span>
+
+          <span class="record-meta mono">
+            Facility · {{ f.facilityType }}
+          </span>
+
+        </a>
+      </li>
+      {% endfor %}
+
+    </ul>
+  </section>
+  {% endif %}
+
+{% endif %}
+{% endblock %}

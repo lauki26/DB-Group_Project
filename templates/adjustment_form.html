@@ -1,0 +1,47 @@
+{% extends "base.html" %}
+{% block title %}New Adjustment CGC{% endblock %}
+
+{% block content %}
+<a href="{{ url_for('adjustments') }}" class="back-link">← Back to adjustments</a>
+
+<header class="page-head">
+  <span class="kicker">— Form —</span>
+  <h1 class="page-title">Log a charge adjustment</h1>
+  <p class="page-sub">Use a negative amount for a discount or correction; positive for additional cost.</p>
+</header>
+
+<form method="post" class="record-form">
+  <label class="field">
+    <span class="field-label">Charge</span>
+    <select name="charge_id" required>
+      <option value="">— Choose charge —</option>
+      {% for c in charges %}
+        <option value="{{ c.chargeId }}">
+          #{{ "%03d"|format(c.chargeId) }} · {{ c.chargeType }} · {{ "%.2f"|format(c.chargeAmount) }} ({{ c.experimentName }})
+        </option>
+      {% endfor %}
+    </select>
+  </label>
+
+  <div class="field-row">
+    <label class="field">
+      <span class="field-label">Adjustment type</span>
+      <input type="text" name="adjustment_type" required placeholder="e.g. Discount, Correction, Bonus Funding">
+    </label>
+    <label class="field">
+      <span class="field-label">Amount (USD)</span>
+      <input type="number" name="amount" step="0.01" required placeholder="-500 or 1000">
+    </label>
+  </div>
+
+  <label class="field">
+    <span class="field-label">Adjustment date</span>
+    <input type="date" name="adjustment_date" required>
+  </label>
+
+  <div class="form-actions">
+    <button type="submit" class="btn btn-primary">Log adjustment</button>
+    <a href="{{ url_for('adjustments') }}" class="btn btn-ghost">Cancel</a>
+  </div>
+</form>
+{% endblock %}

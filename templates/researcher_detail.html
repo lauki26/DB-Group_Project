@@ -1,0 +1,60 @@
+{% extends "base.html" %}
+{% block title %}{{ researcher.researcherName }} Researcher{% endblock %}
+
+{% block content %}
+<a href="{{ url_for('researchers') }}" class="back-link">← Back to researchers</a>
+
+<header class="page-head">
+  <span class="kicker">— Researcher ID{{ "%03d"|format(researcher.researcherId) }} —</span>
+  <h1 class="page-title">{{ researcher.researcherName }}</h1>
+  <p class="page-sub">
+    <a href="{{ url_for('institution_detail', inst_id=researcher.institutionId) }}" class="link-quiet">
+      {{ researcher.institutionName }}
+    </a>
+    <span class="dot">·</span>
+    <span class="mono">{{ researcher.contact }}</span>
+  </p>
+</header>
+
+<section>
+  <h2 class="section-label"><span>§</span> Assigned experiments</h2>
+  {% if assignments %}
+    <table class="data-table">
+      <thead>
+        <tr>
+          <th class="num">ID</th>
+          <th>Experiment</th>
+          <th>Role</th>
+          <th>Start</th>
+          <th>End</th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for a in assignments %}
+        <tr>
+          <td class="num mono">{{ "%03d"|format(a.experimentId) }}</td>
+          <td><span class="cell-strong">{{ a.name }}</span></td>
+          <td><span class="tag tag-role">{{ a.roleName }}</span></td>
+          <td class="mono">{{ a.startDate }}</td>
+          <td class="mono">{{ a.endDate }}</td>
+          <td class="row-action">
+            <a href="{{ url_for('experiment_detail', exp_id=a.experimentId) }}" class="link-arrow">View →</a>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  {% else %}
+    <p class="empty">Not currently assigned to any experiments.</p>
+  {% endif %}
+</section>
+
+<section class="danger-zone">
+  <h2 class="section-label"><span>§</span> Manage</h2>
+  <form action="{{ url_for('researcher_delete', res_id=researcher.researcherId) }}" method="post"
+        onsubmit="return confirm('Remove {{ researcher.researcherName }}? This will also unassign them from all experiments.');">
+    <button type="submit" class="btn btn-danger">Remove this researcher</button>
+  </form>
+</section>
+{% endblock %}

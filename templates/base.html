@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{% block title %}Control Group Consortium{% endblock %}</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="{{ url_for('static', filename='main.css') }}">
+</head>
+<body>
+
+<header class="topbar">
+  <a href="{{ url_for('index') }}" class="brand">
+    <span class="brand-mark">CGC</span>
+    <span class="brand-name">Control Group Consortium</span>
+  </a>
+  <nav class="topnav">
+    <a href="{{ url_for('index') }}" class="nav-link {% if request.endpoint == 'index' %}active{% endif %}">Overview</a>
+    <a href="{{ url_for('institutions') }}" class="nav-link {% if 'institution' in (request.endpoint or '') %}active{% endif %}">Institutions</a>
+    <a href="{{ url_for('researchers') }}" class="nav-link {% if 'researcher' in (request.endpoint or '') %}active{% endif %}">Researchers</a>
+    <a href="{{ url_for('experiments') }}" class="nav-link {% if 'experiment' in (request.endpoint or '') %}active{% endif %}">Experiments</a>
+    <a href="{{ url_for('facilities') }}" class="nav-link {% if 'facility' in (request.endpoint or '') %}active{% endif %}">Facility Usage</a>
+    <a href="{{ url_for('equipment') }}" class="nav-link {% if 'equipment' in (request.endpoint or '') %}active{% endif %}">Equipment Usage</a>
+    <a href="{{ url_for('calendar_view') }}" class="nav-link {% if request.endpoint == 'calendar_view' %}active{% endif %}">Calendar</a>
+    <a href="{{ url_for('funding_sources') }}" class="nav-link {% if 'funding' in (request.endpoint or '') %}active{% endif %}">Funding</a>
+    <a href="{{ url_for('charges') }}" class="nav-link {% if 'charge' in (request.endpoint or '') %}active{% endif %}">Charges</a>
+    <a href="{{ url_for('adjustments') }}" class="nav-link {% if 'adjustment' in (request.endpoint or '') %}active{% endif %}">Adjustments</a>
+  </nav>
+  {% block topbar_search %}
+  <form class="topbar-search" action="{{ url_for('search') }}" method="get" role="search">
+    <svg class="topbar-search-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="7"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+    <input type="search" name="q" placeholder="Search…" aria-label="Search the consortium" autocomplete="off">
+  </form>
+  {% endblock %}
+</header>
+
+<main class="page">
+  {% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+      <div class="flash-stack">
+        {% for category, message in messages %}
+          <div class="flash flash-{{ category }}">{{ message }}</div>
+        {% endfor %}
+      </div>
+    {% endif %}
+  {% endwith %}
+
+  {% block content %}{% endblock %}
+</main>
+
+<footer class="colophon">
+  <span>Control Group Consortium</span>
+  <span class="dot">·</span>
+  <span>Research records management</span>
+</footer>
+
+</body>
+</html>
+
+

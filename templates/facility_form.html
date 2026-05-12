@@ -1,0 +1,69 @@
+{% extends "base.html" %}
+{% block title %}New Facility Usage{% endblock %}
+
+{% block content %}
+<a href="{{ url_for('facilities') }}" class="back-link">← Back to facilities</a>
+
+<header class="page-head">
+  <span class="kicker">— Form —</span>
+  <h1 class="page-title">Record facility usage</h1>
+  <p class="page-sub">
+    Assign facility usage to a specific experiment.
+  </p>
+</header>
+
+<form method="post" class="record-form">
+
+  <label class="field">
+    <span class="field-label">Experiment</span>
+    <select name="experiment_id" required>
+      <option value="">— Choose experiment —</option>
+
+      {% for e in experiments %}
+        <option value="{{ e.experimentId }}">
+          {{ e.name }}
+        </option>
+      {% endfor %}
+    </select>
+  </label>
+
+  <label class="field">
+    <span class="field-label">Facility</span>
+    <select name="facility_id" required>
+      <option value="">— Choose facility —</option>
+
+      {% for f in facilities_list %}
+        <option value="{{ f.facilityId }}">
+          {{ f.facilityName }} ({{ f.facilityType }})
+        </option>
+      {% endfor %}
+    </select>
+  </label>
+
+
+  <div class="field-row">
+
+    <label class="field">
+      <span class="field-label">Start date</span>
+      <input type="date" name="start_date" required>
+    </label>
+
+    <label class="field">
+      <span class="field-label">End date</span>
+      <input type="date" name="end_date" required>
+    </label>
+
+  </div>
+
+  <div class="form-actions">
+    <button type="submit" class="btn btn-primary">
+      Record facility usage
+    </button>
+
+    <a href="{{ url_for('facilities') }}" class="btn btn-ghost">
+      Cancel
+    </a>
+  </div>
+
+</form>
+{% endblock %}

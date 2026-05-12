@@ -1,0 +1,59 @@
+{% extends "base.html" %}
+{% block title %}Experiments CGC{% endblock %}
+
+{% block content %}
+<header class="page-head">
+  <h1 class="page-title">Experiments</h1>
+  <p class="page-sub">The experiments under the Consortium.</p>
+</header>
+
+<div class="action-bar">
+  <a href="{{ url_for('experiment_new') }}" class="btn-add">
+    <span class="btn-add-symbol">+</span>
+    Register experiment
+  </a>
+</div>
+
+<form class="filter-bar" method="get">
+  <label class="field field-grow">
+    <span class="field-label">Search</span>
+    <input type="text" name="q" value="{{ search }}" placeholder="name or description" autocomplete="off">
+  </label>
+  <label class="field">
+    <span class="field-label">Starts on or after</span>
+    <input type="date" name="start_after" value="{{ start_after }}">
+  </label>
+  <label class="field">
+    <span class="field-label">Ends on or before</span>
+    <input type="date" name="end_before" value="{{ end_before }}">
+  </label>
+  <div class="filter-actions">
+    <button type="submit" class="btn btn-primary">Apply</button>
+    <a href="{{ url_for('experiments') }}" class="btn btn-ghost">Reset</a>
+  </div>
+</form>
+
+<div class="result-count">
+  {{ experiments|length }} {{ "experiment" if experiments|length == 1 else "experiments" }}
+</div>
+
+{% if experiments %}
+<div class="card-list">
+  {% for e in experiments %}
+  <article class="exp-card">
+    <div class="exp-card-head">
+      <span class="exp-card-num mono">ID {{ "%03d"|format(e.experimentId) }}</span>
+      <span class="exp-card-dates mono">{{ e.startDate }} → {{ e.endDate }}</span>
+    </div>
+    <h3 class="exp-card-title">
+      <a href="{{ url_for('experiment_detail', exp_id=e.experimentId) }}">{{ e.name }}</a>
+    </h3>
+    <p class="exp-card-desc">{{ e.description }}</p>
+    <a href="{{ url_for('experiment_detail', exp_id=e.experimentId) }}" class="link-arrow">Open record →</a>
+  </article>
+  {% endfor %}
+</div>
+{% else %}
+  <p class="empty">No experiments match.</p>
+{% endif %}
+{% endblock %}

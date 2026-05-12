@@ -1,0 +1,51 @@
+{% extends "base.html" %}
+{% block title %}New Charge CGC{% endblock %}
+
+{% block content %}
+<a href="{{ url_for('charges') }}" class="back-link">← Back to charges</a>
+
+<header class="page-head">
+  <span class="kicker">— Form —</span>
+  <h1 class="page-title">Record a charge</h1>
+  <p class="page-sub">Log an expenditure against a specific experiment.</p>
+</header>
+
+<form method="post" class="record-form">
+  <label class="field">
+    <span class="field-label">Experiment</span>
+    <select name="experiment_id" required>
+      <option value="">— Choose experiment —</option>
+      {% for e in experiments %}
+        <option value="{{ e.experimentId }}" {% if preselect == e.experimentId|string %}selected{% endif %}>{{ e.name }}</option>
+      {% endfor %}
+    </select>
+  </label>
+
+  <div class="field-row">
+    <label class="field">
+      <span class="field-label">Charge type</span>
+      <input type="text" name="charge_type" required placeholder="e.g. Equipment, Staff, Lab">
+    </label>
+    <label class="field">
+      <span class="field-label">Amount (USD)</span>
+      <input type="number" name="amount" step="0.01" required placeholder="0.00">
+    </label>
+  </div>
+
+  <div class="field-row">
+    <label class="field">
+      <span class="field-label">Period start</span>
+      <input type="date" name="start_date" required>
+    </label>
+    <label class="field">
+      <span class="field-label">Period end</span>
+      <input type="date" name="end_date" required>
+    </label>
+  </div>
+
+  <div class="form-actions">
+    <button type="submit" class="btn btn-primary">Record charge</button>
+    <a href="{{ url_for('charges') }}" class="btn btn-ghost">Cancel</a>
+  </div>
+</form>
+{% endblock %}

@@ -1,0 +1,77 @@
+{% extends "base.html" %}
+{% block title %}Researchers CGC{% endblock %}
+
+{% block content %}
+<header class="page-head">
+  <h1 class="page-title">Researchers</h1>
+  <p class="page-sub">Researchers registered across all member institutions.</p>
+</header>
+
+<div class="action-bar">
+  <a href="{{ url_for('researcher_new') }}" class="btn-add">
+    <span class="btn-add-symbol">+</span>
+    Add researcher
+  </a>
+</div>
+
+</header>
+
+<form class="filter-bar" method="get">
+  <label class="field field-grow">
+    <span class="field-label">Search by name or contact</span>
+    <input type="text" name="q" value="{{ search }}" placeholder="e.g. Chen, alice@" autocomplete="off">
+  </label>
+  <label class="field">
+    <span class="field-label">Institution</span>
+    <select name="institution">
+      <option value="">All institutions</option>
+      {% for i in institutions %}
+        <option value="{{ i.institutionId }}" {% if inst_filter == i.institutionId|string %}selected{% endif %}>{{ i.institutionName }}</option>
+      {% endfor %}
+    </select>
+  </label>
+  <div class="filter-actions">
+    <button type="submit" class="btn btn-primary">Apply</button>
+    <a href="{{ url_for('researchers') }}" class="btn btn-ghost">Reset</a>
+  </div>
+</form>
+
+<div class="result-count">
+  {{ researchers|length }} {{ "researcher" if researchers|length == 1 else "researchers" }}
+</div>
+
+{% if researchers %}
+<table class="data-table">
+  <thead>
+    <tr>
+      <th class="num">ID</th>
+      <th>Name</th>
+      <th>Institution</th>
+      <th>Contact</th>
+      <th class="num">Experiments</th>
+      <th></th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for r in researchers %}
+    <tr>
+      <td class="num mono">{{ "%03d"|format(r.researcherId) }}</td>
+      <td><span class="cell-strong">{{ r.researcherName }}</span></td>
+      <td>
+        <a href="{{ url_for('institution_detail', inst_id=r.institutionId) }}" class="link-quiet">
+          {{ r.institutionName }}
+        </a>
+      </td>
+      <td class="mono mute">{{ r.contact }}</td>
+      <td class="num mono">{{ r.experiment_count }}</td>
+      <td class="row-action">
+        <a href="{{ url_for('researcher_detail', res_id=r.researcherId) }}" class="link-arrow">View →</a>
+      </td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+{% else %}
+  <p class="empty">No researchers match.</p>
+{% endif %}
+{% endblock %}

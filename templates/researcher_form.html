@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+{% block title %}New Researcher Control Group Consortium{% endblock %}
+
+{% block content %}
+<a href="{{ url_for('researchers') }}" class="back-link">← Back to researchers</a>
+
+<header class="page-head">
+  <span class="kicker">— Form —</span>
+  <h1 class="page-title">Add a researcher</h1>
+  <p class="page-sub">Enter the researcher's details and choose their home institution.</p>
+</header>
+
+<form method="post" class="record-form">
+  <label class="field">
+    <span class="field-label">Name</span>
+    <input type="text" name="name" required placeholder="Dr. Jane Smith">
+  </label>
+
+  <label class="field">
+    <span class="field-label">Contact email</span>
+    <input type="email" name="contact" required placeholder="jane@institution.edu">
+  </label>
+
+  <label class="field">
+    <span class="field-label">Institution</span>
+    <select name="institution_id" required>
+      <option value="">— Choose institution —</option>
+      {% for i in institutions %}
+        <option value="{{ i.institutionId }}">{{ i.institutionName }}</option>
+      {% endfor %}
+    </select>
+  </label>
+
+  <div class="form-actions">
+    <button type="submit" class="btn btn-primary">Add researcher</button>
+    <a href="{{ url_for('researchers') }}" class="btn btn-ghost">Cancel</a>
+  </div>
+</form>
+{% endblock %}

@@ -1,0 +1,230 @@
+{% extends "base.html" %}
+{% block title %}{{ experiment.name }} Experiment{% endblock %}
+
+{% block content %}
+<a href="{{ url_for('experiments') }}" class="back-link">← Back to experiments</a>
+
+<header class="page-head">
+  <h1 class="page-title">{{ experiment.name }}</h1>
+  <p class="page-sub mono">{{ experiment.startDate }} → {{ experiment.endDate }}</p>
+  <p class="page-desc">{{ experiment.description }}</p>
+</header>
+
+<div class="exp-summary">
+  <div class="summary-cell">
+    <span class="summary-label">Researchers</span>
+    <span class="summary-value">{{ researchers_on|length }}</span>
+  </div>
+  <div class="summary-cell">
+    <span class="summary-label">Funding sources</span>
+    <span class="summary-value">{{ funding|length }}</span>
+  </div>
+  <div class="summary-cell">
+    <span class="summary-label">Charges</span>
+    <span class="summary-value">{{ total_charges|money }}</span>
+  </div>
+  <div class="summary-cell">
+    <span class="summary-label">Adjustments</span>
+    <span class="summary-value">{{ total_adjust|money }}</span>
+  </div>
+  <div class="summary-cell summary-cell-total">
+    <span class="summary-label">Net total</span>
+    <span class="summary-value">{{ net_total|money }}</span>
+  </div>
+</div>
+
+<section>
+  <h2 class="section-label">Researchers</h2>
+  {% if researchers_on %}
+    <table class="data-table">
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Institution</th>
+          <th>Role</th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for r in researchers_on %}
+        <tr>
+          <td>
+            <a href="{{ url_for('researcher_detail', res_id=r.researcherId) }}" class="link-quiet">
+              <span class="cell-strong">{{ r.researcherName }}</span>
+            </a>
+          </td>
+          <td>{{ r.institutionName }}</td>
+          <td><span class="tag tag-role">{{ r.roleName }}</span></td>
+          <td class="row-action">
+            <form action="{{ url_for('experiment_unassign', exp_id=experiment.experimentId, res_id=r.researcherId) }}"
+                  method="post"
+                  onsubmit="return confirm('Unassign {{ r.researcherName }}?');"
+                  style="display: inline;">
+              <button type="submit" class="link-arrow link-arrow-danger">Unassign ✕</button>
+            </form>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  {% else %}
+    <p class="empty">No researchers assigned yet.</p>
+  {% endif %}
+
+  {% if available_researchers %}
+  <details class="inline-form">
+    <summary>+ Assign a researcher</summary>
+    <form method="post" action="{{ url_for('experiment_assign', exp_id=experiment.experimentId) }}" class="row-form">
+      <label class="field field-grow">
+        <span class="field-label">Researcher</span>
+        <select name="researcher_id" required>
+          <option value="">— Choose —</option>
+          {% for r in available_researchers %}
+            <option value="{{ r.researcherId }}">{{ r.researcherName }} ({{ r.institutionName }})</option>
+          {% endfor %}
+        </select>
+      </label>
+      <label class="field">
+        <span class="field-label">Role</span>
+        <select name="role_id" required>
+          <option value="">— Choose —</option>
+          {% for ro in roles %}
+            <option value="{{ ro.roleId }}">{{ ro.roleName }}</option>
+          {% endfor %}
+        </select>
+      </label>
+      <button type="submit" class="btn btn-primary">Assign</button>
+    </form>
+  </details>
+  {% endif %}
+</section>
+
+<section>
+  <h2 class="section-label">Funding sources</h2>
+  {% if funding %}
+    <table class="data-table">
+      <thead>
+        <tr>
+          <th class="num">ID</th>
+          <th>Source</th>
+          <th>Type</th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for f in funding %}
+        <tr>
+          <td class="num mono">{{ "%03d"|format(f.fundingSourceId) }}</td>
+          <td>
+            <a href="{{ url_for('funding_source_detail', fs_id=f.fundingSourceId) }}" class="link-quiet">
+              <span class="cell-strong">{{ f.fundingSourceName }}</span>
+            </a>
+          </td>
+          <td><span class="tag tag-{{ f.fundingSourceType|lower }}">{{ f.fundingSourceType }}</span></td>
+          <td class="row-action">
+            <form action="{{ url_for('experiment_funding_unlink', exp_id=experiment.experimentId, fs_id=f.fundingSourceId) }}"
+                  method="post"
+                  onsubmit="return confirm('Unlink {{ f.fundingSourceName }} from this experiment?');"
+                  style="display: inline;">
+              <button type="submit" class="link-arrow link-arrow-danger">Unlink ✕</button>
+            </form>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  {% else %}
+    <p class="empty">No funding recorded.</p>
+  {% endif %}
+
+  {% if available_funding %}
+  <details class="inline-form">
+    <summary>Link a funding source</summary>
+    <form method="post" action="{{ url_for('experiment_funding_link', exp_id=experiment.experimentId) }}" class="row-form">
+      <label class="field field-grow">
+        <span class="field-label">Funding source</span>
+        <select name="funding_source_id" required>
+          <option value="">— Choose —</option>
+          {% for f in available_funding %}
+            <option value="{{ f.fundingSourceId }}">{{ f.fundingSourceName }} ({{ f.fundingSourceType }})</option>
+          {% endfor %}
+        </select>
+      </label>
+      <button type="submit" class="btn btn-primary">Link</button>
+    </form>
+  </details>
+  {% endif %}
+  <p style="margin-top: 10px; font-size: 12.5px; color: var(--text-muted);">
+    Need a new source? <a href="{{ url_for('funding_source_new') }}">Add one →</a>
+  </p>
+</section>
+
+<section>
+  <div class="section-head-row">
+    <h2 class="section-label">Charges</h2>
+    <a href="{{ url_for('charge_new', experiment=experiment.experimentId) }}" class="btn btn-ghost btn-sm">+ Add charge</a>
+  </div>
+  {% if charges %}
+    <table class="data-table">
+      <thead>
+        <tr>
+          <th class="num">ID</th>
+          <th>Type</th>
+          <th class="num">Amount</th>
+          <th>Period</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for c in charges %}
+        <tr>
+          <td class="num mono">{{ "%03d"|format(c.chargeId) }}</td>
+          <td><span class="cell-strong">{{ c.chargeType }}</span></td>
+          <td class="num mono">{{ c.chargeAmount|money }}</td>
+          <td class="mono mute">{{ c.startDate }} → {{ c.endDate }}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  {% else %}
+    <p class="empty">No charges recorded.</p>
+  {% endif %}
+</section>
+
+<section>
+  <h2 class="section-label">Adjustments</h2>
+  {% if adjustments %}
+    <table class="data-table">
+      <thead>
+        <tr>
+          <th class="num">ID</th>
+          <th>Charge</th>
+          <th>Type</th>
+          <th class="num">Amount</th>
+          <th>Date</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for a in adjustments %}
+        <tr>
+          <td class="num mono">{{ "%03d"|format(a.adjustmentId) }}</td>
+          <td class="mono">#{{ "%03d"|format(a.chargeId) }}</td>
+          <td>{{ a.adjustmentType }}</td>
+          <td class="num mono {{ 'positive' if a.amount > 0 else 'negative' }}">{{ a.amount|money }}</td>
+          <td class="mono mute">{{ a.adjustmentDate }}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  {% else %}
+    <p class="empty">No adjustments recorded.</p>
+  {% endif %}
+</section>
+
+<section class="danger-zone">
+  <h2 class="section-label">Manage</h2>
+  <form action="{{ url_for('experiment_delete', exp_id=experiment.experimentId) }}" method="post"
+        onsubmit="return confirm('Remove this experiment? All charges, adjustments, assignments and funding links will be deleted too.');">
+    <button type="submit" class="btn btn-danger">Remove this experiment</button>
+  </form>
+</section>
+{% endblock %}

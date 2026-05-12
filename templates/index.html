@@ -1,0 +1,90 @@
+{% extends "base.html" %}
+{% block title %}Control Group Consortium{% endblock %}
+
+{% block topbar_search %}{% endblock %}
+
+{% block content %}
+<section class="welcome">
+  <div class="welcome-inner">
+    <div class="welcome-emblem">CGC</div>
+    <h1 class="welcome-title">Control Group Consortium</h1>
+    <p class="welcome-tagline">
+      Welcome to the Control Group Consortium Database. Search for institutions, experiments, or more using the search bar or the tabs above.
+    </p>
+
+    <img src="{{ url_for('static', filename='lab.jpg') }}" alt="Laboratory" class="welcome-image">
+
+    <form class="welcome-search" action="{{ url_for('search') }}" method="get" role="search">
+
+    <form class="welcome-search" action="{{ url_for('search') }}" method="get" role="search">
+      <svg class="welcome-search-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <circle cx="11" cy="11" r="7"></circle>
+        <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+      </svg>
+      <input
+        type="search"
+        name="q"
+        class="welcome-search-input"
+        placeholder="Search researchers, experiments, funding, charges…"
+        aria-label="Search"
+        autocomplete="off"
+        autofocus
+      >
+      <button type="submit" class="welcome-search-submit">Search</button>
+    </form>
+
+    <div class="welcome-hints">
+      <span class="welcome-hints-label">Try</span>
+      <a class="welcome-hint" href="{{ url_for('search', q='cancer') }}">cancer</a>
+      <a class="welcome-hint" href="{{ url_for('search', q='Pfizer') }}">Pfizer</a>
+      <a class="welcome-hint" href="{{ url_for('search', q='Equipment') }}">equipment</a>
+      <a class="welcome-hint" href="{{ url_for('search', q='Government') }}">government</a>
+    </div>
+
+    <h2 class="welcome-actions-title">Quick actions</h2>
+    <nav class="welcome-actions">
+      <a href="{{ url_for('institution_new') }}" class="welcome-action">
+        <span class="welcome-action-plus">+</span>
+        Add institution
+      </a>
+      <a href="{{ url_for('researcher_new') }}" class="welcome-action">
+        <span class="welcome-action-plus">+</span>
+        Add researcher
+      </a>
+      <a href="{{ url_for('experiment_new') }}" class="welcome-action">
+        <span class="welcome-action-plus">+</span>
+        Register experiment
+      </a>
+      <a href="{{ url_for('funding_source_new') }}" class="welcome-action">
+        <span class="welcome-action-plus">+</span>
+        Add funding source
+      </a>
+      <a href="{{ url_for('charge_new') }}" class="welcome-action">
+        <span class="welcome-action-plus">+</span>
+        Record charge
+      </a>
+      <a href="{{ url_for('adjustment_new') }}" class="welcome-action">
+        <span class="welcome-action-plus">+</span>
+        Log adjustment
+      </a>
+      <a href="{{ url_for('equipment_add') }}" class="welcome-action">
+        <span class="welcome-action-plus">+</span>
+        Add equipment
+      </a>
+
+      <a href="{{ url_for('facility_add') }}" class="welcome-action">
+        <span class="welcome-action-plus">+</span>
+        Add facility
+      
+      <a href="{{ url_for('equipment_list') }}" class="welcome-action">
+        View equipment
+      </a>
+
+      <a href="{{ url_for('facilities_list') }}" class="welcome-action">
+        View facilities
+      </a>
+        
+    </nav>
+  </div>
+</section>
+{% endblock %}

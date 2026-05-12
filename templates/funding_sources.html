@@ -1,0 +1,66 @@
+{% extends "base.html" %}
+{% block title %}Funding Sources CGC{% endblock %}
+
+{% block content %}
+<header class="page-head">
+  <h1 class="page-title">Funding Sources</h1>
+  <p class="page-sub">The various funding sources for the experiments.</p>
+</header>
+
+<div class="action-bar">
+  <a href="{{ url_for('funding_source_new') }}" class="btn-add">
+    <span class="btn-add-symbol">+</span>
+    Add funding source
+  </a>
+</div>
+
+
+<form class="filter-bar" method="get">
+  <label class="field">
+    <span class="field-label">Type</span>
+    <select name="type">
+      <option value="">All types</option>
+      {% for t in types %}
+        <option value="{{ t }}" {% if t == type_filter %}selected{% endif %}>{{ t }}</option>
+      {% endfor %}
+    </select>
+  </label>
+  <div class="filter-actions">
+    <button type="submit" class="btn btn-primary">Apply</button>
+    <a href="{{ url_for('funding_sources') }}" class="btn btn-ghost">Reset</a>
+  </div>
+</form>
+
+<div class="result-count">
+  {{ funding_sources|length }} {{ "source" if funding_sources|length == 1 else "sources" }}
+</div>
+
+{% if funding_sources %}
+<table class="data-table">
+  <thead>
+    <tr>
+      <th class="num">№</th>
+      <th>Source</th>
+      <th>Type</th>
+      <th class="num">Experiments funded</th>
+      <th></th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for f in funding_sources %}
+    <tr>
+      <td class="num mono">{{ "%03d"|format(f.fundingSourceId) }}</td>
+      <td><span class="cell-strong">{{ f.fundingSourceName }}</span></td>
+      <td><span class="tag tag-{{ f.fundingSourceType|lower }}">{{ f.fundingSourceType }}</span></td>
+      <td class="num mono">{{ f.experiment_count }}</td>
+      <td class="row-action">
+        <a href="{{ url_for('funding_source_detail', fs_id=f.fundingSourceId) }}" class="link-arrow">View →</a>
+      </td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+{% else %}
+  <p class="empty">No funding sources match.</p>
+{% endif %}
+{% endblock %}

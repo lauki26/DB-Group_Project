@@ -1,0 +1,120 @@
+{% extends "base.html" %}
+{% block title %}Calendar  {{ month_label }} CGC{% endblock %}
+
+{% block content %}
+<header class="page-head">
+  <h1 class="page-title">Experiment calendar</h1>
+  <p class="page-sub">
+    {{ currently_active_count }} active today
+    <span class="dot">·</span>
+    {{ total_in_view }} {{ "experiment" if total_in_view == 1 else "experiments" }} visible
+  </p>
+</header>
+
+<div class="action-bar">
+  <a href="{{ url_for('experiment_new') }}" class="btn-add">
+    <span class="btn-add-symbol">+</span>
+    Register experiment
+  </a>
+</div>
+<div class="calendar-toolbar">
+  <div class="cal-nav">
+    <a href="{{ url_for('calendar_view', year=prev_year, month=prev_month) }}" class="cal-nav-btn" aria-label="Previous month">‹</a>
+    <h2 class="cal-month-label">{{ month_label }}</h2>
+    <a href="{{ url_for('calendar_view', year=next_year, month=next_month) }}" class="cal-nav-btn" aria-label="Next month">›</a>
+  </div>
+  <div class="cal-toolbar-right">
+    <a href="{{ url_for('calendar_view', year=today_year, month=today_month) }}" class="btn btn-ghost btn-sm">Today</a>
+  </div>
+</div>
+
+<div class="calendar-layout">
+
+  <div class="calendar-main">
+    <div class="calendar-grid">
+      <div class="cal-headrow">
+        {% for d in ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'] %}
+          <div class="cal-headcell">{{ d }}</div>
+        {% endfor %}
+      </div>
+
+      {% for week in weeks %}
+        <div class="cal-week">
+          <div class="cal-week-days">
+            {% for day in week %}
+              <div class="cal-day {% if not day.in_month %}cal-day-out{% endif %} {% if day.is_today %}cal-day-today{% endif %}">
+                <span class="cal-day-num">{{ day.day }}</span>
+              </div>
+            {% endfor %}
+          </div>
+          <div class="cal-week-bars">
+            {% for bar in week_bars[loop.index0] %}
+              <a href="{{ url_for('experiment_detail', exp_id=bar.exp_id) }}"
+                 class="cal-bar cal-bar-{{ bar.color_idx }}
+                        {% if bar.continues_left %}cal-bar-cont-left{% endif %}
+                        {% if bar.continues_right %}cal-bar-cont-right{% endif %}"
+                 style="grid-column: {{ bar.start_col + 1 }} / span {{ bar.span }};"
+                 title="{{ bar.name }} ({{ bar.real_start }} → {{ bar.real_end }})">
+                {% if bar.continues_left %}<span class="cal-bar-arrow">‹</span>{% endif %}
+                <span class="cal-bar-name">{{ bar.name }}</span>
+                {% if bar.continues_right %}<span class="cal-bar-arrow">›</span>{% endif %}
+              </a>
+            {% endfor %}
+          </div>
+        </div>
+      {% endfor %}
+    </div>
+
+    {% if not week_bars|select|list %}
+      <p class="empty" style="margin-top: 16px;">No experiments running in {{ month_label }}.</p>
+    {% endif %}
+  </div>
+
+  <aside class="calendar-side">
+
+    <section class="panel">
+      <div class="panel-head">
+        <h2 class="section-label">Starting in next 30 days</h2>
+        <span class="panel-meta mono">{{ starting_soon|length }}</span>
+      </div>
+      {% if starting_soon %}
+        <ul class="upcoming-list">
+          {% for e in starting_soon %}
+          <li class="upcoming-item">
+            <a href="{{ url_for('experiment_detail', exp_id=e.experimentId) }}" class="upcoming-link">
+              <span class="upcoming-date mono">{{ e.startDate }}</span>
+              <span class="upcoming-name">{{ e.name }}</span>
+            </a>
+          </li>
+          {% endfor %}
+        </ul>
+      {% else %}
+        <p class="empty" style="border: none; background: transparent;">Nothing starting soon.</p>
+      {% endif %}
+    </section>
+
+    <section class="panel">
+      <div class="panel-head">
+        <h2 class="section-label">Ending in next 14 days</h2>
+        <span class="panel-meta mono">{{ ending_soon|length }}</span>
+      </div>
+      {% if ending_soon %}
+        <ul class="upcoming-list">
+          {% for e in ending_soon %}
+          <li class="upcoming-item">
+            <a href="{{ url_for('experiment_detail', exp_id=e.experimentId) }}" class="upcoming-link">
+              <span class="upcoming-date mono">{{ e.endDate }}</span>
+              <span class="upcoming-name">{{ e.name }}</span>
+            </a>
+          </li>
+          {% endfor %}
+        </ul>
+      {% else %}
+        <p class="empty" style="border: none; background: transparent;">Nothing ending soon.</p>
+      {% endif %}
+    </section>
+
+  </aside>
+
+</div>
+{% endblock %}

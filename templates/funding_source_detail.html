@@ -1,0 +1,84 @@
+{% extends "base.html" %}
+{% block title %}{{ source.fundingSourceName }} Funding Source{% endblock %}
+
+{% block content %}
+<a href="{{ url_for('funding_sources') }}" class="back-link">← Back to funding sources</a>
+
+<header class="page-head">
+  <h1 class="page-title">{{ source.fundingSourceName }}</h1>
+  <p class="page-sub">
+    <span class="tag tag-{{ source.fundingSourceType|lower }}">{{ source.fundingSourceType }}</span>
+    <span class="dot">·</span>
+    <span class="mono mute">Source #{{ "%03d"|format(source.fundingSourceId) }}</span>
+  </p>
+</header>
+
+<div class="exp-summary">
+  <div class="summary-cell">
+    <span class="summary-label">Experiments funded</span>
+    <span class="summary-value">{{ experiments|length }}</span>
+  </div>
+  <div class="summary-cell">
+    <span class="summary-label">Co-sponsoring sources</span>
+    <span class="summary-value">{{ other_sources|length }}</span>
+  </div>
+  <div class="summary-cell summary-cell-total">
+    <span class="summary-label">Total spend across funded experiments</span>
+    <span class="summary-value">{{ total_funded|money }}</span>
+  </div>
+</div>
+
+<section>
+  <h2 class="section-label">Funded experiments</h2>
+  {% if experiments %}
+    <table class="data-table">
+      <thead>
+        <tr>
+          <th class="num">ID</th>
+          <th>Experiment</th>
+          <th>Period</th>
+          <th class="num">Charges</th>
+          <th class="num">Adjustments</th>
+          <th class="num">Net</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for e in experiments %}
+        <tr>
+          <td class="num mono">{{ "%03d"|format(e.experimentId) }}</td>
+          <td>
+            <a href="{{ url_for('experiment_detail', exp_id=e.experimentId) }}" class="link-quiet">
+              <span class="cell-strong">{{ e.name }}</span>
+            </a>
+          </td>
+          <td class="mono mute">{{ e.startDate }} → {{ e.endDate }}</td>
+          <td class="num mono">{{ e.total_charges|money }}</td>
+          <td class="num mono mute">{{ e.total_adjustments|money }}</td>
+          <td class="num mono cell-strong">{{ (e.total_charges + e.total_adjustments)|money }}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  {% else %}
+    <p class="empty">No experiments funded by this source.</p>
+  {% endif %}
+</section>
+
+{% if other_sources %}
+<section>
+  <h2 class="section-label">Co-sponsoring sources</h2>
+  <p class="section-sub">Other funding sources that share at least one experiment with this one.</p>
+  <ul class="record-list">
+    {% for o in other_sources %}
+    <li class="record-item">
+      <a href="{{ url_for('funding_source_detail', fs_id=o.fundingSourceId) }}" class="record-link">
+        <span class="record-id mono">#{{ "%03d"|format(o.fundingSourceId) }}</span>
+        <span class="record-name">{{ o.fundingSourceName }}</span>
+        <span class="tag tag-{{ o.fundingSourceType|lower }}">{{ o.fundingSourceType }}</span>
+      </a>
+    </li>
+    {% endfor %}
+  </ul>
+</section>
+{% endif %}
+{% endblock %}

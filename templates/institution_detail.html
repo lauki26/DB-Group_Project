@@ -1,0 +1,60 @@
+{% extends "base.html" %}
+{% block title %}{{ institution.institutionName }} Institution{% endblock %}
+
+{% block content %}
+<a href="{{ url_for('institutions') }}" class="back-link">← Back to institutions</a>
+
+<header class="page-head">
+  <span class="kicker">— Institution №{{ "%03d"|format(institution.institutionId) }} —</span>
+<div class="institution-header">
+  <h1 class="page-title">{{ institution.institutionName }}</h1>
+
+  <img src="{{ url_for('static', filename='images/institutions/' ~ institution.institutionName[:3]|lower ~ '.jpg') }}"
+       alt="{{ institution.institutionName }}"
+       class="institution-logo">
+</div>
+  <p class="page-sub">
+    <span class="tag tag-{{ institution.institutionType|lower }}">{{ institution.institutionType }}</span>
+  </p>
+</header>
+
+<div class="two-col">
+  <section class="col">
+    <h2 class="section-label"><span>§</span> Affiliated researchers</h2>
+    {% if researchers %}
+      <ul class="record-list">
+        {% for r in researchers %}
+        <li class="record-item">
+          <a href="{{ url_for('researcher_detail', res_id=r.researcherId) }}" class="record-link">
+            <span class="record-id mono">#{{ "%03d"|format(r.researcherId) }}</span>
+            <span class="record-name">{{ r.researcherName }}</span>
+            <span class="record-meta mono">{{ r.contact }}</span>
+          </a>
+        </li>
+        {% endfor %}
+      </ul>
+    {% else %}
+      <p class="empty">No researchers affiliated.</p>
+    {% endif %}
+  </section>
+
+  <section class="col">
+    <h2 class="section-label"><span>§</span> Experiments involving this institution</h2>
+    {% if experiments %}
+      <ul class="record-list">
+        {% for e in experiments %}
+        <li class="record-item">
+          <a href="{{ url_for('experiment_detail', exp_id=e.experimentId) }}" class="record-link">
+            <span class="record-id mono">#{{ "%03d"|format(e.experimentId) }}</span>
+            <span class="record-name">{{ e.name }}</span>
+            <span class="record-meta mono">{{ e.startDate }} → {{ e.endDate }}</span>
+          </a>
+        </li>
+        {% endfor %}
+      </ul>
+    {% else %}
+      <p class="empty">No experiments yet.</p>
+    {% endif %}
+  </section>
+</div>
+{% endblock %}

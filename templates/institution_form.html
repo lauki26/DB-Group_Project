@@ -1,0 +1,42 @@
+{% extends "base.html" %}
+{% block title %}{% if record %}Edit {{ record.institutionName }}{% else %}New Institution{% endif %} CGC{% endblock %}
+
+{% block content %}
+<a href="{% if record %}{{ url_for('institution_detail', inst_id=record.institutionId) }}{% else %}{{ url_for('institutions') }}{% endif %}" class="back-link">
+  ← Back to {% if record %}{{ record.institutionName }}{% else %}institutions{% endif %}
+</a>
+
+<header class="page-head">
+  <h1 class="page-title">{% if record %}Edit institution{% else %}Add an institution{% endif %}</h1>
+  <p class="page-sub">
+    {% if record %}Update this institution's name or type.
+    {% else %}Register a new organisation so researchers can be affiliated with it.{% endif %}
+  </p>
+</header>
+
+<form method="post" class="record-form">
+  <label class="field">
+    <span class="field-label">Institution name</span>
+    <input type="text" name="name" required value="{{ record.institutionName if record else '' }}"
+           placeholder="e.g. Stanford University">
+  </label>
+
+  <label class="field">
+    <span class="field-label">Type</span>
+    <input type="text" name="type" required value="{{ record.institutionType if record else '' }}"
+           placeholder="e.g. University, Government, Private" list="institution-types">
+    <datalist id="institution-types">
+      {% for t in existing_types %}
+        <option value="{{ t }}"></option>
+      {% endfor %}
+    </datalist>
+  </label>
+
+  <div class="form-actions">
+    <button type="submit" class="btn btn-primary">
+      {% if record %}Save changes{% else %}Add institution{% endif %}
+    </button>
+    <a href="{% if record %}{{ url_for('institution_detail', inst_id=record.institutionId) }}{% else %}{{ url_for('institutions') }}{% endif %}" class="btn btn-ghost">Cancel</a>
+  </div>
+</form>
+{% endblock %}
